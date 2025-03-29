@@ -3,30 +3,52 @@ name = "flask_rag_researcher" # Можете изменить на свое на
 version = "0.1.0"
 description = "Flask RAG Research Assistant using Hugging Face"
 authors = [
-    { name = "Your Name", email = "your@email.com" }, # <<< ЗАМЕНИТЕ ЭТО
+    { name = "Your Name", email = "your@email.com" }, # <<< ЗАМЕНИТЕ ЭТУ СТРОКУ СВОИМИ ДАННЫМИ
 ]
-requires-python = ">=3.9"
-# Зависимости будут добавлены сюда командой 'uv pip install ...'
-# Либо вы можете перечислить их здесь вручную:
+requires-python = ">=3.11" # Хороший выбор
+
+# Основные зависимости.
+# Использование ">=X.Y.Z" позволяет получать обновления, но может влиять
+# на воспроизводимость. Рассмотрите "~=X.Y.Z" для большего контроля.
 dependencies = [
-    # "flask",
-    # "python-dotenv",
-    # "langchain",
-    # "langchain-huggingface",
-    # "transformers[torch]", # [torch] или [tensorflow] или [flax]
-    # "sentence-transformers",
-    # "faiss-cpu", # или faiss-gpu
-    # "chromadb",
-    # "requests",
-    # "beautifulsoup4",
-    # "html2text", # Полезно для конвертации HTML в чистый текст
-    # Добавьте сюда ваш поисковый API клиент, например "tavily-python"
+    "flask>=3.1.0",
+    "python-dotenv>=1.1.0",
+
+    # RAG & Langchain
+    "langchain>=0.3.21",
+    "langchain-huggingface>=0.1.2",
+
+    # Hugging Face & ML Backend
+    # Добавляем [torch], чтобы указать зависимость от PyTorch
+    "transformers[torch]>=4.50.3",
+    "sentence-transformers>=4.0.1",
+    # Убедитесь, что PyTorch установлен отдельно с нужной версией CUDA/CPU,
+    # как мы обсуждали, если вам нужна конкретная сборка.
+    # Зависимость 'torch' здесь больше для указания связи.
+
+    # Vector Stores (выберите одно для использования в коде)
+    "chromadb>=0.6.3",  # Проще для старта
+    "faiss-cpu>=1.10.0", # Производительнее, CPU-версия
+
+    # Web Scraping / Utils
+    "requests>=2.32.3",
+    "beautifulsoup4>=4.13.3",
+    "html2text>=2024.2.26", # Полезен для конвертации HTML в чистый текст для LLM
+
+    # Добавьте сюда ваш поисковый API клиент, если нужен, например:
+    # "tavily-python>=0.3.3",
 ]
 
 [project.optional-dependencies]
+# Зависимости для разработки (устанавливать через 'uv pip install .[dev]')
 dev = [
-    # "pytest",
+    "ruff", # Отличный инструмент для линтинга и форматирования
+    # "pytest", # Если будете писать тесты
 ]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 # Настройки для UV (часто можно оставить пустыми, UV умен)
 # [tool.uv]

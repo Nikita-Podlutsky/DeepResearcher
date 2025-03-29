@@ -1,25 +1,39 @@
-# Python Bytecode and Cache
+# --- Python ---
+# Bytecode and Cache
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual Environments
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+wheels/
+*.whl
+
+# Virtual Environments (Ensure your venv name is covered)
 venv/
 .venv/
 ENV/
 env/
 */env/
 */venv/
+env.bak/
+venv.bak/
 
-# Environment Variables File
+# --- Secrets ---
+# Environment Variables File (NEVER commit secrets)
 .env*
-!.env.example
+!.env.example # Allows committing an example file
 
-# OS-generated files
+# --- OS-generated files ---
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# IDE and Editor files
+# --- IDE and Editor files ---
 .idea/
 .vscode/
 *.suo
@@ -28,19 +42,43 @@ Thumbs.db
 *.sln
 *.sw?
 
-# Local LLM Models / Cache (Adjust paths/patterns if needed)
-# Consider adding large model files downloaded locally if you don't want them in git
-# models/
-# cache/
-# *.bin
-# *.safetensors
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-
-# Runtime files
+# --- Runtime / Log Files ---
 *.log
-*.pot
-*.pyt
+*.log.*
+logs/
+*.bak
+*.tmp
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+
+# --- Hugging Face / PyTorch / ML Specific ---
+# Cached models and datasets (Often stored outside project, but ignore if downloaded locally)
+# models/           # Uncomment if you store large models directly in the project
+# datasets/         # Uncomment if you store large datasets directly in the project
+# data/cache/       # Example custom cache folder
+cache/            # General cache folder name
+.cache/           # Common cache prefix
+
+# Large model file extensions (add others if needed)
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Specific Cache Directories (usually better handled globally, but can be added)
+# .hf_cache/
+# .torch_cache/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints
+
+# --- Other ---
+# Add any other project-specific files/folders to ignore

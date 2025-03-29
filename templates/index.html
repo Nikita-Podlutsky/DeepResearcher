@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>RAG Исследователь (Каркас)</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 15px; border: 1px solid #eee; background-color: #f9f9f9; }
+        textarea { width: 98%; min-height: 60px; margin-bottom: 10px; padding: 5px; }
+        button { padding: 8px 15px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 15px; border: 1px dashed #ccc; background-color: #fff; white-space: pre-wrap; }
+        .result h3 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>RAG Исследователь (Каркас Демо)</h1>
+    <form method="post">
+        <label for="topic">Введите тему:</label><br>
+        <textarea id="topic" name="topic" rows="3" required>{{ topic_input | default('') }}</textarea><br>
+        <button type="submit">Начать (Имитация)</button>
+    </form>
+
+    {% if result %}
+        <div class="result">
+            <h3>Результат по теме: "{{ topic_input }}"</h3>
+            {{ result }}
+        </div>
+    {% endif %}
+
+    {% if error %}
+         <div class="result" style="border-color: red; color: red;">
+            <h3>Ошибка</h3>
+            <p>{{ error }}</p>
+        </div>
+    {% endif %}
+
+</body>
+</html>
