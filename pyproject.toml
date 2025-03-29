@@ -1,0 +1,33 @@
+[project]
+name = "flask_rag_researcher" # Можете изменить на свое название
+version = "0.1.0"
+description = "Flask RAG Research Assistant using Hugging Face"
+authors = [
+    { name = "Your Name", email = "your@email.com" }, # <<< ЗАМЕНИТЕ ЭТО
+]
+requires-python = ">=3.9"
+# Зависимости будут добавлены сюда командой 'uv pip install ...'
+# Либо вы можете перечислить их здесь вручную:
+dependencies = [
+    # "flask",
+    # "python-dotenv",
+    # "langchain",
+    # "langchain-huggingface",
+    # "transformers[torch]", # [torch] или [tensorflow] или [flax]
+    # "sentence-transformers",
+    # "faiss-cpu", # или faiss-gpu
+    # "chromadb",
+    # "requests",
+    # "beautifulsoup4",
+    # "html2text", # Полезно для конвертации HTML в чистый текст
+    # Добавьте сюда ваш поисковый API клиент, например "tavily-python"
+]
+
+[project.optional-dependencies]
+dev = [
+    # "pytest",
+]
+
+# Настройки для UV (часто можно оставить пустыми, UV умен)
+# [tool.uv]
+# ...

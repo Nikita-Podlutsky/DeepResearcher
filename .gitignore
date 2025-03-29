@@ -1,0 +1,46 @@
+# Python Bytecode and Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+env/
+*/env/
+*/venv/
+
+# Environment Variables File
+.env*
+!.env.example
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local LLM Models / Cache (Adjust paths/patterns if needed)
+# Consider adding large model files downloaded locally if you don't want them in git
+# models/
+# cache/
+# *.bin
+# *.safetensors
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Runtime files
+*.log
+*.pot
+*.pyt
