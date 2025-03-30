@@ -13,11 +13,9 @@ requires-python = ">=3.11" # Хороший выбор
 dependencies = [
     "flask>=3.1.0",
     "python-dotenv>=1.1.0",
-
     # RAG & Langchain
     "langchain>=0.3.21",
     "langchain-huggingface>=0.1.2",
-
     # Hugging Face & ML Backend
     # Добавляем [torch], чтобы указать зависимость от PyTorch
     "transformers[torch]>=4.50.3",
@@ -25,18 +23,23 @@ dependencies = [
     # Убедитесь, что PyTorch установлен отдельно с нужной версией CUDA/CPU,
     # как мы обсуждали, если вам нужна конкретная сборка.
     # Зависимость 'torch' здесь больше для указания связи.
-
     # Vector Stores (выберите одно для использования в коде)
-    "chromadb>=0.6.3",  # Проще для старта
+    "chromadb>=0.6.3", # Проще для старта
     "faiss-cpu>=1.10.0", # Производительнее, CPU-версия
-
     # Web Scraping / Utils
     "requests>=2.32.3",
     "beautifulsoup4>=4.13.3",
     "html2text>=2024.2.26", # Полезен для конвертации HTML в чистый текст для LLM
-
     # Добавьте сюда ваш поисковый API клиент, если нужен, например:
     # "tavily-python>=0.3.3",
+    "ollama>=0.4.7",
+    "duckduckgo-search>=7.5.5",
+    "scrapy>=2.12.0",
+    "trafilatura>=2.0.0",
+    "newspaper3k>=0.2.8",
+    "nltk>=3.9.1",
+    "selenium>=4.30.0",
+    "webdriver-manager>=4.0.2",
 ]
 
 [project.optional-dependencies]
@@ -53,3 +56,7 @@ build-backend = "setuptools.build_meta"
 # Настройки для UV (часто можно оставить пустыми, UV умен)
 # [tool.uv]
 # ...
+
+[tool.setuptools]
+# Указываем все ваши .py файлы в корне как модули
+py-modules = ["app", "rag_service", "utils"]
