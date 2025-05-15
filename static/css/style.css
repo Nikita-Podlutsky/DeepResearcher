@@ -1,0 +1,97 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #292929; /* Темный фон */
+    color: #fff0e6; /* Белый текст */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    margin-top: 400px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.search-input {
+    padding: 10px;
+    width: 1300px;
+    border: 1px solid #444; /* Темная граница */
+    border-radius: 5px;
+    background-color: #1e1e1e; /* Темный фон для инпута */
+    color: #fff0e6;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    border-color: #ffe5b4; /* Цвет при фокусе */
+}
+
+.search-button {
+    width: 200px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ffe5b4; /* Цвет фона кнопки */
+    color: #000000;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: #ffe5b4; /* Цвет при наведении */
+}
+
+.output {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #444; /* Темная граница для вывода */
+    background-color: #1e1e1e; /* Темный фон для блока вывода */
+    min-height: 100px; /* Минимальная высота блока вывода */
+    border-radius: 5px;
+    color: #fff0e6;
+}
+
+.search-form {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+}
+
+.result {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background-color: #3b3b3b; 
+    color: #dad7c4;
+    width: 150vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border: #dad7c4;
+    border-style: solid;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.prompt-editor {
+    width: 1200px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #dad7c4;
+}

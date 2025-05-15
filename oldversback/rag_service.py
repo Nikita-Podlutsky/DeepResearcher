@@ -32,10 +32,10 @@ OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434") # Исполь�
 # Имя коллекции в ChromaDB
 CHROMA_COLLECTION_NAME = "research_docs" # Как в примере, но можно изменить
 # Параметры разбиения текста на чанки
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 150
+CHUNK_SIZE = 2000
+CHUNK_OVERLAP = 500
 # Количество релевантных чанков для извлечения
-TOP_K_RESULTS = 5 # В примере извлекается 1 результат
+TOP_K_RESULTS = 10 # В примере извлекается 1 результат
 
 # --- Инициализация Клиентов (Обновлено) ---
 # Проверка доступности Ollama (не через клиент, а через сам модуль)
@@ -223,7 +223,7 @@ def generate_section_text_rag(plan_item: str, collection, embed_model: str) -> s
     print(f"\n[Шаг 5 - RAG Generation] Генерация текста для раздела: '{plan_item}'")
 
     # 4. RAG Retrieval - получаем один самый релевантный документ/чанк
-    retrieved_data = retrieve_relevant_document(plan_item, collection, embed_model, k=1)
+    retrieved_data = retrieve_relevant_document(plan_item, collection, embed_model, k=TOP_K_RESULTS)
 
     if not retrieved_data:
         print("  Не удалось получить контекст из БД. Генерация без RAG.")

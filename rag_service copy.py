@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 load_dotenv()
 
 # --- Конфигурация ---
-OLLAMA_LLM_MODEL = os.getenv("OLLAMA_LLM_MODEL", "gemma3:12b") # Модель для генерации текста
+OLLAMA_LLM_MODEL = os.getenv("OLLAMA_LLM_MODEL", "qwen3:0.6b-fp16") # Модель для генерации текста
 OLLAMA_EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "mxbai-embed-large:latest") # Модель для эмбеддингов
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434") # Адрес сервера Ollama
 
@@ -279,7 +279,43 @@ def generate_research_plan(topic: str) -> list[str]:
               "Не добавляй никаких пояснений до или после списка.")
     prompt = f"Составь подробный план исследования на тему: \"{topic}\"."
     response = call_ollama_generate(prompt, system_message=system)
-    return response
+    if not response:
+        logging.error("Не удалось сгенерировать план исследования.")
+        return []
+
+    plan_items = []
+    # Устойчивый парсинг нумерованных/маркированных списков
+    for line in response.strip().split('\n'):
+        # Ищем строки, начинающиеся с цифры+точки, звездочки, дефиса (с возможными пробелами)
+        match = re.match(r'^\s*[\*\-\d]+\.?\s*(.*)', line)
+        if match:
+            item = match.group(1).strip() # Берем текст после маркера/номера
+            if item: # Добавляем только непустые строки
+                plan_items.append(item)
+
+    # Если парсинг не удался, пробуем просто разбить по строкам
+    if not plan_items and response:
+         logging.warning("Не удалось извлечь пункты плана с помощью регулярного выражения. Используем разбиение по строкам.")
+         plan_items = [line.strip() for line in response.strip().split('\n') if line.strip()]
+
+    # Проверка и добавление стандартных разделов, если их нет (эвристика)
+    plan_lower = [p.lower() for p in plan_items]
+    if not any(re.search(r'введен|introduc', item) for item in plan_lower):
+        plan_items.insert(0, "Введение")
+        logging.info("Добавлен раздел 'Введение' в план.")
+    if not any(re.search(r'заключ|conclus|summary|вывод', item) for item in plan_lower):
+        plan_items.append("Заключение")
+        logging.info("Добавлен раздел 'Заключение' в план.")
+    if not any(re.search(r'литератур|источник|ссылк|references|bibliography|sources', item) for item in plan_lower):
+        plan_items.append("Список использованной литературы")
+        logging.info("Добавлен раздел 'Список использованной литературы' в план.")
+
+
+    logging.info(f"Сгенерированный и дополненный план ({len(plan_items)} пунктов):")
+    for i, item in enumerate(plan_items):
+        print(f"  {i+1}. {item}")
+        logging.info(f"  {i+1}. {item}")
+    return plan_items
 
 
 def generate_search_queries(topic:str, plan_item: str, full_plan: list[str], num_queries: int = 1) -> list[str]:
@@ -485,7 +521,7 @@ def generate_section_text_smart(
 
 
 # --- Основная функция запуска исследования ---
-def run_research(topic: str, plan = None) -> str:
+def run_research(topic: str) -> str:
     """
     Выполняет полный цикл исследования:
     1. Генерация плана.
@@ -498,68 +534,10 @@ def run_research(topic: str, plan = None) -> str:
     start_time_total = time.time()
     logging.info(f"=== Запуск RAG-исследования по теме: '{topic}' ===")
     logging.info(f"Параметры: LLM={OLLAMA_LLM_MODEL}, Embeddings={OLLAMA_EMBED_MODEL}, DB=Chroma In-Memory '{CHROMA_COLLECTION_NAME}'")
-    if plan is None:
-        # --- Шаг 1: Генерация плана ---
-        plan = generate_research_plan(topic)
-    if not plan:
-        logging.error("Не удалось сгенерировать план исследования.")
-        return []
 
-    plan_items = []
-    # Устойчивый парсинг нумерованных/маркированных списков
-    for line in plan.strip().split('\n'):
-        # Ищем строки, начинающиеся с цифры+точки, звездочки, дефиса (с возможными пробелами)
-        match = re.match(r'^\s*[\*\-\d]+\.?\s*(.*)', line)
-        if match:
-            item = match.group(1).strip() # Берем текст после маркера/номера
-            if item: # Добавляем только непустые строки
-                plan_items.append(item)
+    # --- Шаг 1: Генерация плана ---
+    plan = generate_research_plan(topic)
 
-    # Если парсинг не удался, пробуем просто разбить по строкам
-    if not plan_items and plan:
-         logging.warning("Не удалось извлечь пункты плана с помощью регулярного выражения. Используем разбиение по строкам.")
-         plan_items = [line.strip() for line in plan.strip().split('\n') if line.strip()]
-
-    # Проверка и добавление стандартных разделов, если их нет (эвристика)
-    plan_lower = [p.lower() for p in plan_items]
-    if not any(re.search(r'введен|introduc', item) for item in plan_lower):
-        plan_items.insert(0, "Введение")
-        logging.info("Добавлен раздел 'Введение' в план.")
-    if not any(re.search(r'заключ|conclus|summary|вывод', item) for item in plan_lower):
-        plan_items.append("Заключение")
-        logging.info("Добавлен раздел 'Заключение' в план.")
-    if not any(re.search(r'литератур|источник|ссылк|references|bibliography|sources', item) for item in plan_lower):
-        plan_items.append("Список использованной литературы")
-        logging.info("Добавлен раздел 'Список использованной литературы' в план.")
-
-
-    logging.info(f"Сгенерированный и дополненный план ({len(plan_items)} пунктов):")
-    for i, item in enumerate(plan_items):
-        print(f"  {i+1}. {item}")
-        logging.info(f"  {i+1}. {item}")
-    plan = plan_items
-
-    # Если парсинг не удался, пробуем просто разбить по строкам
-    if not plan and plan:
-        logging.warning("Не удалось извлечь пункты плана с помощью регулярного выражения. Используем разбиение по строкам.")
-        plan = [line.strip() for line in plan.strip().split('\n') if line.strip()]
-
-    # Проверка и добавление стандартных разделов, если их нет (эвристика)
-    plan_lower = [p.lower() for p in plan]
-    if not any(re.search(r'введен|introduc', item) for item in plan_lower):
-        plan.insert(0, "Введение")
-        logging.info("Добавлен раздел 'Введение' в план.")
-    if not any(re.search(r'заключ|conclus|summary|вывод', item) for item in plan_lower):
-        plan.append("Заключение")
-        logging.info("Добавлен раздел 'Заключение' в план.")
-    if not any(re.search(r'литератур|источник|ссылк|references|bibliography|sources', item) for item in plan_lower):
-        plan.append("Список использованной литературы")
-        logging.info("Добавлен раздел 'Список использованной литературы' в план.")
-
-
-    logging.info(f"Сгенерированный и дополненный план ({len(plan)} пунктов):")
-    for i, item in enumerate(plan):
-        logging.info(f"  {i+1}. {item}")
     if not plan:
         error_message = "КРИТИЧЕСКАЯ ОШИБКА: Не удалось создать план исследования. Процесс остановлен."
         logging.error(error_message)

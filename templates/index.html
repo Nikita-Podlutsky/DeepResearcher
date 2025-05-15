@@ -3,31 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>RAG Исследователь (Каркас)</title>
-    <style>
-        body { font-family: sans-serif; max-width: 800px; margin: 20px auto; padding: 15px; border: 1px solid #eee; background-color: #f9f9f9; }
-        textarea { width: 98%; min-height: 60px; margin-bottom: 10px; padding: 5px; }
-        button { padding: 8px 15px; cursor: pointer; }
-        .result { margin-top: 20px; padding: 15px; border: 1px dashed #ccc; background-color: #fff; white-space: pre-wrap; }
-        .result h3 { margin-top: 0; }
-    </style>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
 </head>
 <body>
-    <h1>RAG Исследователь (Каркас Демо)</h1>
-    <form method="post">
-        <label for="topic">Введите тему:</label><br>
-        <textarea id="topic" name="topic" rows="3" required>{{ topic_input | default('') }}</textarea><br>
-        <button type="submit">Начать (Имитация)</button>
-    </form>
+
+    <div class="container">
+        <form method="post" class="search-form">
+            <label for="topic">Введите тему:</label><br>
+            <textarea id="topic" name="topic" rows="3" required class="search-input">{{ topic_input | default('') }}</textarea><br>
+            <div>
+                <button type="submit" class="search-button" name="start-button" value="submit">Начать (Имитация)</button>
+            </div>
+        </form>
+    </div>
+
+    {% if prompt %}
+        {% if editmode %}
+            <div class="result">
+                <h3>Сгенерированный промт:</h3>
+                <form method="post">
+                    <textarea id="prompt" rows="10" class="prompt-editor" name="new-prompt">{{ new_prompt | default(prompt) }}</textarea>
+                    <input type="hidden" name="result" value="{{ result }}">
+                    <input type="hidden" name="prompt" value="{{ prompt }}">
+                    <input type="hidden" name="topic" value="{{ topic_input }}">
+                    <div>
+                        <button type="submit" class="search-button" name="exit-button">Редактировать</button>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <div class="result">
+                <h3>Сгенерированный промт:</h3>
+                <p>{{ prompt }}</p>
+                <form method="post">
+                    <input type="hidden" name="result" value="{{ result }}">
+                    <input type="hidden" name="prompt" value="{{ prompt }}">
+                    <input type="hidden" name="topic" value="{{ topic_input }}">
+                    <div>
+                        <button type="submit" class="search-button" name="edit-button">Редактировать</button>
+                        <button type="submit" class="search-button" name="next-button">Далее</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    {% endif %}
 
     {% if result %}
         <div class="result">
             <h3>Результат по теме: "{{ topic_input }}"</h3>
-            {{ result }}
+            {{ result | safe }}
         </div>
     {% endif %}
 
     {% if error %}
-         <div class="result" style="border-color: red; color: red;">
+         <div class="result">
             <h3>Ошибка</h3>
             <p>{{ error }}</p>
         </div>
@@ -35,3 +64,4 @@
 
 </body>
 </html>
+

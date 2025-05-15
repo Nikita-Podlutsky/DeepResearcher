@@ -3,8 +3,7 @@ import os
 from flask import Flask, request, render_template
 from dotenv import load_dotenv
 
-# Импортируем нашу ЗАГЛУШКУ RAG сервиса
-from rag_service import run_research
+from rag_service import run_research, generate_research_plan
 
 # Загружаем переменные окружения из .env
 load_dotenv()
@@ -20,29 +19,49 @@ app = Flask(__name__)
 def index():
     """Обрабатывает главную страницу (GET) и отправку формы (POST)."""
     topic_input = ""
-    result = None
     error = None
+    editmode = False
+
+    result = request.form.get('result', '')
+    prompt = request.form.get('prompt', '')
+    new_prompt = request.form.get('new-prompt', '')
 
     if request.method == 'POST':
-        topic_input = request.form.get('topic', '').strip()
-        if not topic_input:
-            error = "Пожалуйста, введите тему для исследования."
-        else:
-            try:
-                print(f"[Flask App] Received topic: '{topic_input}'. Calling RAG service...")
-                # Вызываем нашу ЗАГЛУШКУ RAG сервиса
-                result = run_research(topic_input)
-                print(f"[Flask App] RAG service returned result.")
-            except Exception as e:
-                print(f"[Flask App] Error during RAG execution: {e}")
-                error = f"Произошла ошибка при обработке запроса: {e}"
 
-    # Рендерим HTML шаблон, передавая ему данные
+        topic_input = request.form.get('topic', '').strip()
+
+        if request.form.get('start-button'):
+            if not topic_input:
+                error = "Пожалуйста, введите тему для исследования."
+            else:
+                try:
+                    print(f"[Flask App] Received topic: '{topic_input}'. Calling RAG service...")
+                    prompt = generate_research_plan(topic_input) # функция которая генерирует промт
+                    print(f"[Flask App] RAG service returned result.")
+                except Exception as e:
+                    print(f"[Flask App] Error during RAG execution: {e}")
+                    error = f"Произошла ошибка при обработке запроса: {e}"
+
+        if new_prompt:
+            prompt = new_prompt
+        print(prompt)
+        if 'next-button' in request.form:
+            result = run_research(topic_input, plan = prompt) # функция которая делает исследование по промту
+
+        # обработка кнопки "редактировать"
+        if 'edit-button' in request.form:
+            editmode = True 
+            
+        if 'exit-button' in request.form:
+            editmode = False
+
     return render_template(
         'index.html',
         topic_input=topic_input, # Чтобы поле ввода не очищалось
         result=result,           # Результат исследования (или None)
-        error=error              # Сообщение об ошибке (или None)
+        error=error,             # Сообщение об ошибке (или None)
+        prompt=prompt,           # Промт
+        editmode=editmode        # Режим редактирования
     )
 
 if __name__ == '__main__':
