@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 load_dotenv()
 
 # --- Конфигурация ---
-OLLAMA_LLM_MODEL = os.getenv("OLLAMA_LLM_MODEL", "gemma3:12b") # Модель для генерации текста
+OLLAMA_LLM_MODEL = "gemma3:latest"
 OLLAMA_EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "mxbai-embed-large:latest") # Модель для эмбеддингов
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434") # Адрес сервера Ollama
 
